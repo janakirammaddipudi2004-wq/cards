@@ -123,3 +123,25 @@ https://cards-backend.onrender.com/health
 ```
 
 Then open the frontend, sign in, create a table, join from another browser/profile, and start a 2-player game.
+
+## If Google Sign-In Stays on the Home Screen
+
+Google sign-in has two steps:
+
+1. The browser gets a Google credential.
+2. The frontend sends that credential to the backend at `/auth/google`.
+
+If step 1 works but the app stays on the sign-in/home screen, check the frontend env vars and redeploy the static site:
+
+```bash
+VITE_API_URL=https://cards-backend.onrender.com
+VITE_BACKEND_URL=https://cards-backend.onrender.com
+```
+
+Also check the backend env var and redeploy the backend:
+
+```bash
+FRONTEND_URL=https://cards-frontend.onrender.com
+```
+
+If Render assigned different URLs, use the actual frontend and backend URLs.

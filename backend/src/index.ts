@@ -14,10 +14,31 @@ import { logger } from './utils/logger';
 const app = express();
 const server = http.createServer(app);
 
+const renderFrontendOrigin = /^https:\/\/[\w-]*frontend[\w-]*\.onrender\.com$/;
+
+function isAllowedOrigin(origin?: string) {
+  if (!origin) return true;
+  if (env.frontendUrls.includes(origin)) return true;
+  if (env.isDev && /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin)) return true;
+  return renderFrontendOrigin.test(origin);
+}
+
+const corsOrigin = (
+  origin: string | undefined,
+  callback: (err: Error | null, allow?: boolean) => void
+) => {
+  if (isAllowedOrigin(origin)) {
+    callback(null, true);
+    return;
+  }
+
+  callback(new Error(`CORS origin not allowed: ${origin}`), false);
+};
+
 // Socket.IO server
 const io = new Server(server, {
   cors: {
-    origin: env.frontendUrl,
+    origin: corsOrigin,
     methods: ['GET', 'POST'],
     credentials: true,
   },
@@ -27,7 +48,7 @@ const io = new Server(server, {
 
 // Middleware
 app.use(cors({
-  origin: env.frontendUrl,
+  origin: corsOrigin,
   credentials: true,
 }));
 app.use(express.json());
@@ -61,7 +82,7 @@ async function start() {
   server.listen(env.port, () => {
     logger.info(`🚀 Server running on port ${env.port}`);
     logger.info(`📡 WebSocket ready`);
-    logger.info(`🌍 CORS origin: ${env.frontendUrl}`);
+    logger.info(`🌍 CORS origins: ${env.frontendUrls.join(', ')}`);
   });
 }
 
