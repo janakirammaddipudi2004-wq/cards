@@ -22,7 +22,7 @@ services:
       - key: GOOGLE_CLIENT_ID
         sync: false
       - key: FRONTEND_URL
-        value: https://cards-frontend-mw09.onrender.com
+        value: https://trickmaster.netlify.app,https://cards-frontend-mw09.onrender.com
 
   - type: web
     name: cards-frontend

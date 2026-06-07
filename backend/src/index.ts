@@ -14,11 +14,16 @@ import { logger } from './utils/logger';
 const app = express();
 const server = http.createServer(app);
 
+const productionFrontendOrigins = new Set([
+  'https://trickmaster.netlify.app',
+  'https://cards-frontend-mw09.onrender.com',
+]);
 const renderFrontendOrigin = /^https:\/\/[\w-]*frontend[\w-]*\.onrender\.com$/;
 
 function isAllowedOrigin(origin?: string) {
   if (!origin) return true;
   if (env.frontendUrls.includes(origin)) return true;
+  if (productionFrontendOrigins.has(origin)) return true;
   if (env.isDev && /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin)) return true;
   return renderFrontendOrigin.test(origin);
 }
