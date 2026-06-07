@@ -19,6 +19,7 @@ interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  socketRevision: number;
 
   login: (credential: string) => Promise<void>;
   updateDisplayName: (name: string) => Promise<void>;
@@ -31,13 +32,20 @@ export const useAuthStore = create<AuthState>((set) => ({
   token: localStorage.getItem('token'),
   isAuthenticated: false,
   isLoading: true,
+  socketRevision: 0,
 
   login: async (credential: string) => {
     try {
       const { token, user } = await api.googleLogin(credential);
       localStorage.setItem('token', token);
       connectSocket(token);
-      set({ user, token, isAuthenticated: true, isLoading: false });
+      set((state) => ({
+        user,
+        token,
+        isAuthenticated: true,
+        isLoading: false,
+        socketRevision: state.socketRevision + 1,
+      }));
     } catch (error) {
       console.error('Login failed:', error);
       throw error;
@@ -51,14 +59,25 @@ export const useAuthStore = create<AuthState>((set) => ({
       disconnectSocket();
       connectSocket(token);
     }
-    set({ user, isAuthenticated: true, isLoading: false });
+    set((state) => ({
+      user,
+      isAuthenticated: true,
+      isLoading: false,
+      socketRevision: token ? state.socketRevision + 1 : state.socketRevision,
+    }));
   },
 
   logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('activeRoomCode');
     disconnectSocket();
-    set({ user: null, token: null, isAuthenticated: false, isLoading: false });
+    set((state) => ({
+      user: null,
+      token: null,
+      isAuthenticated: false,
+      isLoading: false,
+      socketRevision: state.socketRevision + 1,
+    }));
   },
 
   restoreSession: async () => {
@@ -71,10 +90,22 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const { user } = await api.getMe();
       connectSocket(token);
-      set({ user, token, isAuthenticated: true, isLoading: false });
+      set((state) => ({
+        user,
+        token,
+        isAuthenticated: true,
+        isLoading: false,
+        socketRevision: state.socketRevision + 1,
+      }));
     } catch {
       localStorage.removeItem('token');
-      set({ user: null, token: null, isAuthenticated: false, isLoading: false });
+      set((state) => ({
+        user: null,
+        token: null,
+        isAuthenticated: false,
+        isLoading: false,
+        socketRevision: state.socketRevision + 1,
+      }));
     }
   },
 }));

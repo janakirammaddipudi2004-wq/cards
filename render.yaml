@@ -22,7 +22,7 @@ services:
       - key: GOOGLE_CLIENT_ID
         sync: false
       - key: FRONTEND_URL
-        value: https://cards-frontend.onrender.com
+        value: https://cards-frontend-mw09.onrender.com
 
   - type: web
     name: cards-frontend
@@ -39,9 +39,9 @@ services:
         value: same-origin-allow-popups
     envVars:
       - key: VITE_API_URL
-        value: https://cards-backend.onrender.com
+        value: https://cards-backend-75st.onrender.com
       - key: VITE_BACKEND_URL
-        value: https://cards-backend.onrender.com
+        value: https://cards-backend-75st.onrender.com
       - key: VITE_GOOGLE_CLIENT_ID
         sync: false
 

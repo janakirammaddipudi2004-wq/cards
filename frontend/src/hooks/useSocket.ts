@@ -26,10 +26,9 @@ export function useSocketListeners() {
     addMessage, addToast, setView, setRoomConflict, setTrickCelebration, setRoundSummary,
   } = useGameStore();
 
-  // isAuthenticated is the signal that connectSocket() has been called
-  // and the socket instance now exists. Without this dep, the effect runs
-  // on mount before the socket is created (restoreSession is async).
-  const { isAuthenticated } = useAuthStore();
+  // isAuthenticated gates first setup; socketRevision moves handlers to a
+  // fresh socket after login/session restore/display-name reconnects.
+  const { isAuthenticated, socketRevision } = useAuthStore();
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -38,7 +37,7 @@ export function useSocketListeners() {
     try {
       socket = getSocket();
     } catch {
-      // Socket not ready yet — will retry when isAuthenticated changes
+      // Socket not ready yet — will retry when auth/socket state changes.
       return;
     }
 
@@ -174,7 +173,7 @@ export function useSocketListeners() {
       socket.off(ServerEvents.PLAYER_RECONNECTED, onPlayerReconnected);
       socket.off(ServerEvents.ERROR, onError);
     };
-  }, [isAuthenticated]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, socketRevision]); // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 /**
