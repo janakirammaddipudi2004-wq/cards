@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: cards-backend
+    runtime: node
+    buildCommand: cd backend && npm ci && npm run build
+    startCommand: cd backend && node dist/backend/src/db/migrate.js && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cards-postgres
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: FRONTEND_URL
+        value: https://cards-frontend.onrender.com
+
+  - type: web
+    name: cards-frontend
+    runtime: static
+    buildCommand: cd frontend && npm ci && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://cards-backend.onrender.com
+      - key: VITE_BACKEND_URL
+        value: https://cards-backend.onrender.com
+      - key: VITE_GOOGLE_CLIENT_ID
+        sync: false
+
+databases:
+  - name: cards-postgres
+    databaseName: cards_game
+    user: cards_user
