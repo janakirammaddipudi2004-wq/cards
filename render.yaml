@@ -3,7 +3,7 @@ services:
     name: cards-backend
     runtime: node
     plan: free
-    buildCommand: cd backend && npm ci && npm run build
+    buildCommand: cd backend && npm ci --include=dev && npm run build
     startCommand: cd backend && node dist/backend/src/db/migrate.js && npm start
     envVars:
       - key: NODE_ENV
@@ -26,7 +26,7 @@ services:
   - type: web
     name: cards-frontend
     runtime: static
-    buildCommand: cd frontend && npm ci && npm run build
+    buildCommand: cd frontend && npm ci --include=dev && npm run build
     staticPublishPath: frontend/dist
     routes:
       - type: rewrite

@@ -43,7 +43,7 @@ In Render:
 4. Build command:
 
 ```bash
-cd backend && npm ci && npm run build
+cd backend && npm ci --include=dev && npm run build
 ```
 
 5. Start command:
@@ -75,7 +75,7 @@ In Render:
 3. Build command:
 
 ```bash
-cd frontend && npm ci && npm run build
+cd frontend && npm ci --include=dev && npm run build
 ```
 
 4. Publish directory:
