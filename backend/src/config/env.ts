@@ -4,6 +4,10 @@ dotenv.config();
 const nodeEnv = process.env.NODE_ENV || 'development';
 const isDev = nodeEnv === 'development';
 const databaseUrl = process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/cards_game';
+const databaseSsl =
+  process.env.DATABASE_SSL === 'true' ||
+  process.env.PGSSLMODE === 'require' ||
+  databaseUrl.includes('sslmode=require');
 const jwtSecret = process.env.JWT_SECRET || 'dev-secret';
 const googleClientId = process.env.GOOGLE_CLIENT_ID || '';
 
@@ -22,6 +26,7 @@ export const env = {
   port: parseInt(process.env.PORT || '3001', 10),
   nodeEnv,
   databaseUrl,
+  databaseSsl,
   jwtSecret,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   googleClientId,
