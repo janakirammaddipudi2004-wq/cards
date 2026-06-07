@@ -3,6 +3,7 @@ services:
     name: cards-backend
     runtime: node
     plan: free
+    healthCheckPath: /health
     buildCommand: cd backend && npm ci --include=dev && npm run build
     startCommand: cd backend && node dist/backend/src/db/migrate.js && npm start
     envVars:
